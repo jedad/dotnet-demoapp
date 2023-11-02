@@ -2,7 +2,7 @@
 
 #1 TRIGGERS / exclusins
 trigger:
--  azure-pipelines-test-stages
+- azure-pipelines-test-stages
 
 # POOLS
 stages:
@@ -20,37 +20,36 @@ stages:
           echo Add other tasks to build, test, and deploy your project.
           echo See https://aka.ms/yaml
         displayName: 'Run a multi-line script'
-
-# # STAGE 1 - BUILD ON LINUX
-# - stage: Build Linux
-#   jobs:
-#   - job: BuildApp
-#     pool:
-#       vmImage: 'ubuntu-latest'
-#     steps:
-#     - task: DotNetCoreCLI@2
-#       displayName: 'Restore dependencies'
-#       inputs:
-#         command: 'restore'
-#         projects: '**/*.csproj'
-#     - task: DotNetCoreCLI@2
-#       displayName: 'Build project'
-#       inputs:
-#         command: 'build'
-#         projects: '**/*.csproj'
-#         arguments: '--configuration Release --no-restore'
-#     - task: DotNetCoreCLI@2
-#       displayName: 'Publish project'
-#       inputs:
-#         command: 'publish'
-#         publishWebProjects: true
-#         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
-#         zipAfterPublish: true
-#     - task: PublishBuildArtifacts@1
-#       displayName: 'Publish artifacts'
-#       inputs:
-#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#         artifactName: 'drop'
+# STAGE 1 - BUILD ON LINUX
+- stage: BuildLinux
+  jobs:
+  - job: BuildApp
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore dependencies'
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'Build project'
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '--configuration Release --no-restore'
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish project'
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'drop'
 
 # # STAGE 2 - BUILD ON WIN
 
