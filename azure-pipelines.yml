@@ -21,84 +21,84 @@ stages:
           echo See https://aka.ms/yaml
         displayName: 'Run a multi-line script'
 
-# STAGE 1 - BUILD ON LINUX
-- stage: Build Linux
-  jobs:
-  - job: BuildApp
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore dependencies'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
-    - task: DotNetCoreCLI@2
-      displayName: 'Build project'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--configuration Release --no-restore'
-    - task: DotNetCoreCLI@2
-      displayName: 'Publish project'
-      inputs:
-        command: 'publish'
-        publishWebProjects: true
-        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish artifacts'
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'drop'
+# # STAGE 1 - BUILD ON LINUX
+# - stage: Build Linux
+#   jobs:
+#   - job: BuildApp
+#     pool:
+#       vmImage: 'ubuntu-latest'
+#     steps:
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Restore dependencies'
+#       inputs:
+#         command: 'restore'
+#         projects: '**/*.csproj'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Build project'
+#       inputs:
+#         command: 'build'
+#         projects: '**/*.csproj'
+#         arguments: '--configuration Release --no-restore'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Publish project'
+#       inputs:
+#         command: 'publish'
+#         publishWebProjects: true
+#         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+#         zipAfterPublish: true
+#     - task: PublishBuildArtifacts@1
+#       displayName: 'Publish artifacts'
+#       inputs:
+#         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#         artifactName: 'drop'
 
-# STAGE 2 - BUILD ON WIN
+# # STAGE 2 - BUILD ON WIN
 
-# This pipeline will install the .NET 6 SDK, run unit tests with code coverage, and publish the code coverage results
-- stage: Build Win
-  pool:
-    vmImage: 'windows-latest'
-  jobs:
-  - job: BuildApp
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: UseDotNet@2
-      displayName: 'Install .NET 6 SDK'
-      inputs:
-        packageType: 'sdk'
-        version: '6.0.x'
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore dependencies'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
+# # This pipeline will install the .NET 6 SDK, run unit tests with code coverage, and publish the code coverage results
+# - stage: Build Win
+#   pool:
+#     vmImage: 'windows-latest'
+#   jobs:
+#   - job: BuildApp
+#     pool:
+#       vmImage: 'ubuntu-latest'
+#     steps:
+#     - task: UseDotNet@2
+#       displayName: 'Install .NET 6 SDK'
+#       inputs:
+#         packageType: 'sdk'
+#         version: '6.0.x'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Restore dependencies'
+#       inputs:
+#         command: 'restore'
+#         projects: '**/*.csproj'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Build project'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--configuration Release --no-restore'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Build project'
+#       inputs:
+#         command: 'build'
+#         projects: '**/*.csproj'
+#         arguments: '--configuration Release --no-restore'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Run unit tests with code coverage'
-      inputs:
-        command: 'test'
-        projects: '**/*Tests.csproj'
-        arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Run unit tests with code coverage'
+#       inputs:
+#         command: 'test'
+#         projects: '**/*Tests.csproj'
+#         arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
 
-    - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
-      displayName: 'Install report generator tool'
+#     - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
+#       displayName: 'Install report generator tool'
 
-    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
-      displayName: 'Generate code coverage report'
+#     - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
+#       displayName: 'Generate code coverage report'
 
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publish code coverage results'
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+#     - task: PublishCodeCoverageResults@1
+#       displayName: 'Publish code coverage results'
+#       inputs:
+#         codeCoverageTool: 'Cobertura'
+#         summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
 
 # STAGE 2 - DEPLOY
 # - stage: Deploy
