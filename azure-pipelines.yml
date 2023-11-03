@@ -112,7 +112,7 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: 'Build project'
       inputs:
-        version: '3.1.x'
+        version: '6.x'
         command: 'build'
         projects: '**/*.csproj'
         arguments: '--configuration Release --no-restore'
@@ -120,6 +120,7 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: 'Run unit tests with code coverage'
       inputs:
+        version: '5.x'
         command: 'test'
         projects: '**/*tests.csproj'
         arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
@@ -127,7 +128,7 @@ stages:
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'VSTest'
-        testResultsFiles: '**/TestResults/*.trx'
+        testResultsFiles: '/home/vsts/work/_temp/*.trx'
         searchFolder: '$(System.DefaultWorkingDirectory)'
 
     - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
