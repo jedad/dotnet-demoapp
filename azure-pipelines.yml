@@ -47,49 +47,35 @@ stages:
       inputs:
         command: 'build'
         projects: '**/*.csproj'
-        arguments: '--configuration Release --no-restore'
+        arguments: '--configuration $(buildConfiguration)'
         
-    # - task: DotNetCoreCLI@2
-    #   displayName: 'Run tests with code coverage'
-    #   inputs:
-    #     command: 'test'
-    #     projects: '**/*tests.csproj'
-    #   # arguments: '--configuration Release --logger trx --collect:"Code coverage"'
-    #   # arguments: '--configuration $(buildConfiguration) --logger trx --collect:"Code coverage"'
-    #     arguments: '--configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"'
-
-    # - task: PublishCodeCoverageResults@1
-    #   displayName: 'Publish code coverage results'
-    #   inputs:
-    #     codeCoverageTool: 'Cobertura'
-    #     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
-    #     reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
-
     - task: DotNetCoreCLI@2
+      displayName: 'Run tests with code coverage'
       inputs:
-        command: 'test'
-        projects: '**/*[Tt]ests/*.csproj'
-        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-        publishTestResults: true
+       command: 'test'
+       projects: '**/*tests.csproj'
+       # projects: '**/*[Tt]ests/*.csproj'
+       arguments: '--configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage"'
+      # arguments: '--configuration Release --logger trx --collect:"Code coverage"'
+      # arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+      # publishTestResults: true
 
     - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
       displayName: 'Install report generator tool'
-    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/Coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
+
+    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
       displayName: 'Generate code coverage report'
-    - task: PublishCodeCoverageResults@1
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
 
     - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage results'
       inputs:
         codeCoverageTool: 'Cobertura'
-        summaryFileLocation: ':$(Build.SourcesDirectory)/CodeCoverage'
-
-    - task: PublishCodeCoverageResults@1
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: ':$(Agent.TempDirectory)/**/Coverage.cobertura.xml'
+        summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+      # summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+      # summaryFileLocation: ':$(Build.SourcesDirectory)/CodeCoverage'
+      # summaryFileLocation: ':$(Agent.TempDirectory)/**/Coverage.cobertura.xml'
+#       summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'on: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
+#       reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
 
     - script: |
           echo Agent.TempDirectory:
@@ -198,9 +184,9 @@ stages:
 #     - task: PublishCodeCoverageResults@1
 #       displayName: 'Publish code coverage results'
 #       inputs:
-#         codeCoverageTool: 'Cobertura'
-#         summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
-#         #summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
+#         codeCoverageToo
+#         #summaryFileLocatil: 'Cobertura'
+#         summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'on: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
 #    #     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
 #   #     reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
 
