@@ -162,7 +162,7 @@ stages:
       inputs:
         codeCoverageTool: 'Cobertura'
         summaryFileLocation: '$(Build.SourcesDirectory)/[Cc]ode[Cc]overage/[Cc]obertura.xml'
-        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
+        #summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
 
 # STAGE 2 - DEPLOY
 # - stage: Deploy
