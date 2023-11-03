@@ -71,23 +71,40 @@ stages:
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
         publishTestResults: true
-        
-    - script: |
-          echo Agent.TempDirectory:
-          ls $(Agent.TempDirectory)
-          echo buildConfiguration:
-          ls $(buildConfiguration)
-          echo Build.SourcesDirectory:
-          ls $(Build.SourcesDirectory)
-          echo System.DefaultWorkingDirectory:
-          ls $(System.DefaultWorkingDirectory)
-      displayName: 'Content display script'
-          #echo Build.SourcesDirectory/CodeCoverage:
-          #ls $(Build.SourcesDirectory)/CodeCoverage
+
+    - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
+      displayName: 'Install report generator tool'
+    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/Coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
+      displayName: 'Generate code coverage report'
     - task: PublishCodeCoverageResults@1
       inputs:
         codeCoverageTool: 'Cobertura'
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: ':$(Build.SourcesDirectory)/CodeCoverage'
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: ':$(Agent.TempDirectory)/**/Coverage.cobertura.xml'
+
+    - script: |
+          echo Agent.TempDirectory:
+          ls $(Agent.TempDirectory)
+          ls $(Agent.TempDirectory)/tests
+          echo buildConfiguration:
+          ls $(buildConfiguration)
+          ls $(buildConfiguration)/tests
+          echo Build.SourcesDirectory:
+          ls $(Build.SourcesDirectory)
+          ls $(Build.SourcesDirectory)/tests
+          echo System.DefaultWorkingDirectory:
+          ls $(System.DefaultWorkingDirectory)
+          ls $(System.DefaultWorkingDirectory)/tests
+      displayName: 'Content display script'
 #     - task: DotNetCoreCLI@2
 #       displayName: 'Publish project'
 #       inputs:
