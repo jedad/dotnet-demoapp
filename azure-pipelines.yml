@@ -38,6 +38,12 @@ stages:
         command: 'build'
         projects: '**/*.csproj'
         arguments: '--configuration Release --no-restore'
+        
+    - script: dotnet test <test-project> --logger trx --collect "Code coverage"
+    - task: PublishTestResults@2
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/*.trx'
     - task: DotNetCoreCLI@2
       displayName: 'Publish project'
       inputs:
@@ -79,25 +85,25 @@ stages:
         command: 'build'
         projects: '**/*.csproj'
         arguments: '--configuration Release --no-restore'
+    # DOESNT WORK:
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'Run unit tests with code coverage'
+    #   inputs:
+    #     command: 'test'
+    #     projects: '**/*Tests.csproj'
+    #     arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Run unit tests with code coverage'
-      inputs:
-        command: 'test'
-        projects: '**/*Tests.csproj'
-        arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
+    # - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
+    #   displayName: 'Install report generator tool'
 
-    - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
-      displayName: 'Install report generator tool'
+    # - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
+    #   displayName: 'Generate code coverage report'
 
-    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:"Cobertura"'
-      displayName: 'Generate code coverage report'
-
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publish code coverage results'
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+    # - task: PublishCodeCoverageResults@1
+    #   displayName: 'Publish code coverage results'
+    #   inputs:
+    #     codeCoverageTool: 'Cobertura'
+    #     summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
 
 # STAGE 2 - DEPLOY
 # - stage: Deploy
