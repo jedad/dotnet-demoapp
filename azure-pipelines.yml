@@ -80,7 +80,7 @@ stages:
           echo Build.SourcesDirectory:
           ls $(Build.SourcesDirectory)
           echo System.DefaultWorkingDirectory:
-          ls (System.DefaultWorkingDirectory)
+          ls $(System.DefaultWorkingDirectory)
       displayName: 'Content display script'
           #echo Build.SourcesDirectory/CodeCoverage:
           #ls $(Build.SourcesDirectory)/CodeCoverage
