@@ -43,7 +43,7 @@ stages:
       displayName: 'Run tests with code coverage'
       inputs:
         command: 'test'
-        projects: '**/*Tests.csproj'
+        projects: '**/*tests.csproj'
         arguments: '--configuration $(buildConfiguration) --logger trx --collect "Code coverage"'
 
     - task: PublishTestResults@2
@@ -75,31 +75,31 @@ stages:
 # # STAGE 2 - BUILD ON WIN
 
 # This pipeline will install the .NET 6 SDK, run unit tests with code coverage, and publish the code coverage results
-- stage: BuildWin
-  pool:
-    vmImage: 'windows-latest'
-  jobs:
-  - job: BuildApp
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: UseDotNet@2
-      displayName: 'Install .NET 6 SDK'
-      inputs:
-        packageType: 'sdk'
-        version: '6.0.x'
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore dependencies'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
+# - stage: BuildWin
+#   pool:
+#     vmImage: 'windows-latest'
+#   jobs:
+#   - job: BuildApp
+#     pool:
+#       vmImage: 'ubuntu-latest'
+#     steps:
+#     - task: UseDotNet@2
+#       displayName: 'Install .NET 6 SDK'
+#       inputs:
+#         packageType: 'sdk'
+#         version: '6.0.x'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Restore dependencies'
+#       inputs:
+#         command: 'restore'
+#         projects: '**/*.csproj'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Build project'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--configuration Release --no-restore'
+#     - task: DotNetCoreCLI@2
+#       displayName: 'Build project'
+#       inputs:
+#         command: 'build'
+#         projects: '**/*.csproj'
+#         arguments: '--configuration Release --no-restore'
     # DOESNT WORK:
     # - task: DotNetCoreCLI@2
     #   displayName: 'Run unit tests with code coverage'
