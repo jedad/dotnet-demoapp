@@ -65,6 +65,13 @@ stages:
     #     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
     #     reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
 
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: '**/*[Tt]ests/*.csproj'
+        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+        publishTestResults: true
+        
     - script: |
           echo Agent.TempDirectory:
           ls $(Agent.TempDirectory)
@@ -72,19 +79,11 @@ stages:
           ls $(buildConfiguration)
           echo Build.SourcesDirectory:
           ls $(Build.SourcesDirectory)
-          echo Build.SourcesDirectory/CodeCoverage:
-          ls $(Build.SourcesDirectory)/CodeCoverage
-          'echo System.DefaultWorkingDirectory:
+          echo System.DefaultWorkingDirectory:
           ls (System.DefaultWorkingDirectory)
       displayName: 'Content display script'
-
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'test'
-        projects: '**/*[Tt]ests/*.csproj'
-        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-        publishTestResults: true
-
+          #echo Build.SourcesDirectory/CodeCoverage:
+          #ls $(Build.SourcesDirectory)/CodeCoverage
     - task: PublishCodeCoverageResults@1
       inputs:
         codeCoverageTool: 'Cobertura'
