@@ -39,11 +39,26 @@ stages:
         projects: '**/*.csproj'
         arguments: '--configuration Release --no-restore'
         
-    - script: dotnet test <test-project> --logger trx --collect "Code coverage"
-    - task: PublishTestResults@2
+    - task: DotNetCoreCLI@2
+      displayName: 'Run tests with code coverage'
       inputs:
-        testRunner: VSTest
+        command: 'test'
+        projects: '**/*Tests.csproj'
+        arguments: '--configuration $(buildConfiguration) --logger trx --collect "Code coverage"'
+
+    - task: PublishTestResults@2
+      displayName: 'Publish test results'
+      inputs:
+        testResultsFormat: 'VSTest'
         testResultsFiles: '**/*.trx'
+        failTaskOnFailedTests: true
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage results'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+        reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
     - task: DotNetCoreCLI@2
       displayName: 'Publish project'
       inputs:
