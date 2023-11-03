@@ -58,19 +58,12 @@ stages:
       # arguments: '--configuration $(buildConfiguration) --logger trx --collect:"Code coverage"'
       # arguments: '--configuration Release --no-build --collect:"XPlat Code Coverage"'
 
-    - task: PublishTestResults@2
-      displayName: 'Publish test results'
-      inputs:
-        testResultsFormat: 'VSTest'
-        testResultsFiles: '/home/vsts/work/_temp/*.trx'
-        failTaskOnFailedTests: true
-
-
-        
     # - task: PublishTestResults@2
+    #   displayName: 'Publish test results'
     #   inputs:
     #     testResultsFormat: 'VSTest'
     #     testResultsFiles: '/home/vsts/work/_temp/*.trx'
+    #     failTaskOnFailedTests: true
     #     searchFolder: '$(System.DefaultWorkingDirectory)'
 
 
@@ -154,15 +147,30 @@ stages:
     - script: 'dotnet tool install -g dotnet-reportgenerator-globaltool'
       displayName: 'Install report generator tool'
 
-    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/[Cc]overage.[Cc]obertura.xml -targetdir:$(Build.SourcesDirectory)/[Cc]ode[Cc]overage -reporttypes:"Cobertura"'
+    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/Coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/[Cc]ode[Cc]overage -reporttypes:"Cobertura"'
       displayName: 'Generate code coverage report'
 
+    - script: |
+          'echo Agent.TempDirectory:'
+          'ls $(Agent.TempDirectory)'
+          'echo buildConfiguration:'
+          'ls $(buildConfiguration)'
+          'echo Build.SourcesDirectory:''
+          'ls $(Build.SourcesDirectory)'
+          'echo Build.SourcesDirectory/CodeCoverage:'
+          'ls $(Build.SourcesDirectory)/CodeCoverage'
+          'echo System.DefaultWorkingDirectory'
+          'ls (System.DefaultWorkingDirectory)'
+          'ls '
+      displayName: 'Content display script'
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage results'
       inputs:
         codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Build.SourcesDirectory)/[Cc]ode[Cc]overage/[Cc]obertura.xml'
+        summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
         #summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/[Cc]overage.[Cc]obertura.xml'
+   #     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+  #     reportDirectory: '$(System.DefaultWorkingDirectory)/**/coveragehtml'
 
 # STAGE 2 - DEPLOY
 # - stage: Deploy
